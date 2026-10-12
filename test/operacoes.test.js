@@ -74,3 +74,153 @@ describe('Suíte de Testes Fraca para 50 Operações Aritméticas', () => {
   test('49. deve calcular o triplo de um número', () => { expect(triplo(10)).toBe(30); });
   test('50. deve calcular a metade de um número', () => { expect(metade(20)).toBe(10); });
 });
+
+// ============================================================================
+// Testes adicionados para matar mutantes sobreviventes (Etapa 5)
+// Cada bloco indica a linha de src/operacoes.js e o tipo de mutante eliminado.
+// ============================================================================
+describe('Testes reforçados para eliminar mutantes sobreviventes', () => {
+
+  // --- divisao (L8): StringLiteral na mensagem de erro ---
+  test('divisao: lança erro com a mensagem correta quando o divisor é zero', () => {
+    expect(() => divisao(5, 0)).toThrow('Divisão por zero não é permitida.');
+    expect(divisao(-9, 3)).toBe(-3);
+  });
+
+  // --- raizQuadrada (L13): ConditionalExpression / EqualityOperator (n < 0 -> n <= 0) ---
+  test('raizQuadrada: lança erro com mensagem para negativos e aceita o limite zero', () => {
+    expect(() => raizQuadrada(-1)).toThrow('Não é possível calcular a raiz quadrada de um número negativo.');
+    expect(raizQuadrada(0)).toBe(0);
+  });
+
+  // --- fatorial (L18-19): erro para negativos, limites 0 e 1 ---
+  test('fatorial: lança erro com mensagem para negativos', () => {
+    expect(() => fatorial(-1)).toThrow('Fatorial não é definido para números negativos.');
+  });
+  test('fatorial: casos-limite 0, 1 e 2 e valores maiores', () => {
+    expect(fatorial(0)).toBe(1);
+    expect(fatorial(1)).toBe(1);
+    expect(fatorial(2)).toBe(2);
+    expect(fatorial(5)).toBe(120);
+  });
+
+  // --- mediaArray (L25): array vazio retorna 0 (e não NaN) ---
+  test('mediaArray: array vazio retorna 0', () => {
+    expect(mediaArray([])).toBe(0);
+    expect(mediaArray([5])).toBe(5);
+  });
+
+  // --- maximoArray / minimoArray (L34, L38): guarda de array vazio ---
+  test('maximoArray: lança erro para array vazio', () => {
+    expect(() => maximoArray([])).toThrow(/Array vazio/);
+    expect(() => maximoArray([])).toThrow(/valor máximo/);
+    expect(maximoArray([-3, -1, -7])).toBe(-1);
+  });
+  test('minimoArray: lança erro para array vazio', () => {
+    expect(() => minimoArray([])).toThrow(/Array vazio/);
+    expect(() => minimoArray([])).toThrow(/valor mínimo/);
+    expect(minimoArray([-3, -1, -7])).toBe(-7);
+  });
+
+  // --- isPar / isImpar (L43-44): caso falso para cada função ---
+  test('isPar: retorna false para ímpares e true para zero', () => {
+    expect(isPar(7)).toBe(false);
+    expect(isPar(0)).toBe(true);
+    expect(isPar(-4)).toBe(true);
+  });
+  test('isImpar: retorna false para pares e true para ímpares negativos', () => {
+    expect(isImpar(4)).toBe(false);
+    expect(isImpar(0)).toBe(false);
+    expect(isImpar(-3)).toBe(true);
+  });
+
+  // --- isPrimo (L73-75): limites, compostos, loop e operador ---
+  test('isPrimo: números menores ou iguais a 1 não são primos', () => {
+    expect(isPrimo(1)).toBe(false);
+    expect(isPrimo(0)).toBe(false);
+    expect(isPrimo(-7)).toBe(false);
+  });
+  test('isPrimo: compostos retornam false e primos pequenos retornam true', () => {
+    expect(isPrimo(2)).toBe(true);
+    expect(isPrimo(3)).toBe(true);
+    expect(isPrimo(4)).toBe(false);
+    expect(isPrimo(9)).toBe(false);
+    expect(isPrimo(15)).toBe(false);
+    expect(isPrimo(13)).toBe(true);
+  });
+
+  // --- produtoArray (L84): array vazio retorna o elemento neutro 1 ---
+  test('produtoArray: array vazio retorna 1 (elemento neutro)', () => {
+    expect(produtoArray([])).toBe(1);
+    expect(produtoArray([5])).toBe(5);
+    expect(produtoArray([2, 0, 4])).toBe(0);
+  });
+
+  // --- clamp (L88-89): valores abaixo do mínimo e acima do máximo ---
+  test('clamp: limita pelos extremos do intervalo', () => {
+    expect(clamp(-5, 0, 10)).toBe(0);
+    expect(clamp(15, 0, 10)).toBe(10);
+    expect(clamp(0, 0, 10)).toBe(0);
+    expect(clamp(10, 0, 10)).toBe(10);
+  });
+
+  // --- isDivisivel (L92): caso falso ---
+  test('isDivisivel: retorna false quando não é divisível', () => {
+    expect(isDivisivel(10, 3)).toBe(false);
+    expect(isDivisivel(0, 5)).toBe(true);
+  });
+
+  // --- conversões de temperatura (L93-94): ArithmeticOperator em 9/5 e 5/9 ---
+  test('celsiusParaFahrenheit: usa o fator 9/5 corretamente', () => {
+    expect(celsiusParaFahrenheit(100)).toBeCloseTo(212);
+    expect(celsiusParaFahrenheit(-40)).toBeCloseTo(-40);
+    expect(celsiusParaFahrenheit(37)).toBeCloseTo(98.6);
+  });
+  test('fahrenheitParaCelsius: usa o fator 5/9 corretamente', () => {
+    expect(fahrenheitParaCelsius(212)).toBeCloseTo(100);
+    expect(fahrenheitParaCelsius(-40)).toBeCloseTo(-40);
+    expect(fahrenheitParaCelsius(98.6)).toBeCloseTo(37);
+  });
+
+  // --- inverso (L96): guarda de zero ---
+  test('inverso: lança erro com mensagem para zero', () => {
+    expect(() => inverso(0)).toThrow('Não é possível inverter o número zero.');
+    expect(inverso(-2)).toBe(-0.5);
+  });
+
+  // --- comparações (L104-106): resultados falsos e igualdade na fronteira ---
+  test('isMaiorQue: false para menor e para igual', () => {
+    expect(isMaiorQue(5, 10)).toBe(false);
+    expect(isMaiorQue(5, 5)).toBe(false);
+  });
+  test('isMenorQue: false para maior e para igual', () => {
+    expect(isMenorQue(10, 5)).toBe(false);
+    expect(isMenorQue(5, 5)).toBe(false);
+  });
+  test('isEqual: false para valores diferentes', () => {
+    expect(isEqual(7, 8)).toBe(false);
+    expect(isEqual(7, '7')).toBe(false);
+  });
+
+  // --- medianaArray (L108-112): guarda, ordenação numérica, par/ímpar ---
+  test('medianaArray: lança erro para array vazio', () => {
+    expect(() => medianaArray([])).toThrow(/Array vazio/);
+    expect(() => medianaArray([])).toThrow(/mediana/);
+  });
+  test('medianaArray: ordena numericamente arrays desordenados de tamanho ímpar', () => {
+    expect(medianaArray([10, 9, 1, 100, 5])).toBe(9);
+    expect(medianaArray([5])).toBe(5);
+  });
+  test('medianaArray: média dos dois valores centrais em arrays de tamanho par', () => {
+    expect(medianaArray([4, 1, 3, 2])).toBe(2.5);
+    expect(medianaArray([10, 2, 8, 4])).toBe(6);
+    expect(medianaArray([1, 3])).toBe(2);
+  });
+
+  // --- Garantia de que a mediana não altera o array original (spread [...numeros]) ---
+  test('medianaArray: não modifica o array de entrada', () => {
+    const entrada = [3, 1, 2];
+    medianaArray(entrada);
+    expect(entrada).toEqual([3, 1, 2]);
+  });
+});
